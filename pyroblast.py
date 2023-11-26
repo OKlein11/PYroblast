@@ -18,7 +18,7 @@ def getSet(setCode:str = None, scryfallID:str = None, tcgPlagerID:int= None):
             assert req.status_code == 200
             return req.json()
         except AssertionError:
-            print("An error has occurred")
+            raise AssertionError("An error has occurred")
         except exceptions.ConnectionError:
             raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
     elif not ((setCode is not None) ^ (scryfallID is not None) ^ (tcgPlagerID is not None)):
@@ -57,3 +57,99 @@ def getSet(setCode:str = None, scryfallID:str = None, tcgPlagerID:int= None):
             raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
 
 
+def getCardByID(cardID:str, idType:str = "scryfall"):
+    '''
+    This function takes in a cardID and an idType and goes to the /cards/:idType/:cardID endpoint, except for the 'scryfall' idtype, which returns the /cards/:cardID endpoint
+    '''
+    if idType not in ["multiverse","mtgo","arena", "tcgplayer","cardmarket", "scryfall"]:
+        raise ValueError(f"{idType} is not a valid idType for the getCardByID function")
+    if idType == "scryfall":
+        try:
+            req = get(urlBuilder(SCRYFALL_API_URL, "cards", cardID))
+            assert req.status_code == 200 
+            return req.json()
+        except AssertionError:
+            if req.status_code == 404:
+                raise ValueError(f"The card with '{cardID}' does not exist, please try again")
+        except exceptions.ConnectionError:
+            raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
+    else:
+        try:
+            req = get(urlBuilder(SCRYFALL_API_URL, "cards", idType , cardID))
+            assert req.status_code == 200 
+            return req.json()
+        except AssertionError:
+            if req.status_code == 404:
+                raise ValueError(f"The card with {idType} id '{cardID}' does not exist, please try again")
+        except exceptions.ConnectionError:
+            raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
+
+
+
+def getRulingsByID(cardID:str, idType:str = "scryfall"):
+    '''
+    This function takes in a cardID and an idType and goes to the /cards/:idType/:cardID/rulings endpoint, except for the 'scryfall' idtype, which returns the /cards/:cardID/rulings endpoint
+    '''
+    if idType not in ["multiverse","mtgo","arena", "tcgplayer","cardmarket", "scryfall"]:
+        raise ValueError(f"{idType} is not a valid idType for the getCardByID function")
+    if idType == "scryfall":
+        try:
+            req = get(urlBuilder(SCRYFALL_API_URL, "cards", cardID, "rulings"))
+            assert req.status_code == 200 
+            return req.json()
+        except AssertionError:
+            if req.status_code == 404:
+                raise ValueError(f"The card with '{cardID}' does not exist, please try again")
+        except exceptions.ConnectionError:
+            raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
+    else:
+        try:
+            req = get(urlBuilder(SCRYFALL_API_URL, "cards", idType , cardID, "rulings"))
+            assert req.status_code == 200 
+            return req.json()
+        except AssertionError:
+            if req.status_code == 404:
+                raise ValueError(f"The card with {idType} id '{cardID}' does not exist, please try again")
+        except exceptions.ConnectionError:
+            raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
+
+
+def getSymbology():
+    '''
+    This function returns data from the /symbology endpoint
+    '''
+    try:
+        req = get(urlBuilder(SCRYFALL_API_URL, "symbology"))
+        assert req.status_code == 200
+        return req.json()
+    except AssertionError:
+        raise AssertionError("An error has occurred")
+    except exceptions.ConnectionError:
+        raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
+
+def parseMana(manaCost:str):
+    '''
+    This function returns data from the endpoint /symbology/parse-mana/:manaCost
+    '''
+    try:
+        req = get((urlBuilder(SCRYFALL_API_URL, "symbology", "parse-mana")+ "?cost="+manaCost))
+        assert req.status_code == 200
+        return req.json()
+    except AssertionError:
+        raise AssertionError("An error has occurred")
+    except exceptions.ConnectionError:
+        raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
+
+
+def getCatalog(catalogName:str):
+    '''
+    This function returns the /catalog/:catalogName
+    '''
+    try:
+        req = get(urlBuilder(SCRYFALL_API_URL, "catalog", catalogName))
+        assert req.status_code == 200
+        return req.json()
+    except AssertionError:
+        raise AssertionError("An error has occurred")
+    except exceptions.ConnectionError:
+        raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
