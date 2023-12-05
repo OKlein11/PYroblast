@@ -153,3 +153,57 @@ def getCatalog(catalogName:str):
         raise AssertionError("An error has occurred")
     except exceptions.ConnectionError:
         raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
+
+
+def getCardBySetNum(setCode:str, collectorNum, languange:str="en"):
+    '''
+    This function gets a card through the /cards/:setCode/:collectorNum/:language
+    '''
+    try:
+        req = get(urlBuilder(SCRYFALL_API_URL,"cards",setCode.lower(),str(collectorNum),languange))
+        assert req.status_code == 200
+        return req.json()
+    except AssertionError:
+        raise AssertionError("An error has occurred")
+    except exceptions.ConnectionError:
+        raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
+
+def getRandomCard():
+    '''
+    This function returns data from the /cards/random endpoint
+    '''
+    try:
+        req = get(urlBuilder(SCRYFALL_API_URL, "cards","random"))
+        assert req.status_code == 200
+        return req.json()
+    except AssertionError:
+        raise AssertionError("An error has occurred")
+    except exceptions.ConnectionError:
+        raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
+
+
+def autocompleteCards(query):
+    '''
+    this function returns the /cards/autocomplete/?q=query
+    '''
+    try:
+        req = get(urlBuilder(SCRYFALL_API_URL, "cards","autocomplete",q=query))
+        assert req.status_code == 200
+        return req.json()
+    except AssertionError:
+        raise AssertionError("An error has occurred")
+    except exceptions.ConnectionError:
+        raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
+
+def getNamedCards(**kwargs):
+    '''
+    
+    '''
+    try:
+        req = get(urlBuilder(SCRYFALL_API_URL, "cards","named",**kwargs))
+        assert req.status_code == 200
+        return req.json()
+    except AssertionError:
+        raise AssertionError("An error has occurred")
+    except exceptions.ConnectionError:
+        raise ConnectionError("ERROR: Unable to make connection to " + SCRYFALL_API_URL)
